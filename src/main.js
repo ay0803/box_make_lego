@@ -1,4 +1,4 @@
-import { setupEnvironment, startRenderLoop, enableCameraAutoOrbit, THREE } from './environment.js';
+import { setupEnvironment, startRenderLoop, enableCameraAutoOrbit, THREE, setCameraDistanceMultiplier, CAMERA_DISTANCE_MULTIPLIER } from './environment.js';
 import { createBlocks, parseBlocksJSON, setBlocksJSON, BLOCKS_JSON } from './block.js';
 import { exportOBJFromMeshes } from './exporters/obj.js';
 
@@ -43,6 +43,10 @@ const input = document.getElementById('blocks-json');
 const sendBtn = document.getElementById('send-btn');
 const errorEl = document.getElementById('json-error');
 const downloadObjBtn = document.getElementById('download-obj');
+const zoomSlider = document.getElementById('env-zoom');
+const zoomVal = document.getElementById('env-zoom-val');
+const envToggleBtn = document.getElementById('env-toggle');
+const envContent = document.getElementById('env-content');
 if (input) input.value = BLOCKS_JSON;
 if (sendBtn) {
   sendBtn.addEventListener('click', () => {
@@ -95,5 +99,29 @@ if (downloadObjBtn) {
   downloadObjBtn.addEventListener('click', () => {
     errorEl && (errorEl.textContent = '');
     exportBlocksAsOBJ();
+  });
+}
+
+// Environment UI: camera distance multiplier slider
+if (zoomSlider) {
+  try {
+    zoomSlider.value = String(CAMERA_DISTANCE_MULTIPLIER ?? 1);
+    if (zoomVal) zoomVal.textContent = `${Number(zoomSlider.value).toFixed(2)}x`;
+  } catch (_) {}
+  zoomSlider.addEventListener('input', (e) => {
+    const v = parseFloat(e.target.value);
+    setCameraDistanceMultiplier(v);
+    if (zoomVal) zoomVal.textContent = `${(Number.isFinite(v) ? v : 1).toFixed(2)}x`;
+  });
+}
+
+// Environment panel open/close toggle (initially closed)
+if (envToggleBtn && envContent) {
+  envToggleBtn.textContent = 'Open';
+  envContent.style.display = 'none';
+  envToggleBtn.addEventListener('click', () => {
+    const isOpen = envContent.style.display !== 'none';
+    envContent.style.display = isOpen ? 'none' : 'block';
+    envToggleBtn.textContent = isOpen ? 'Open' : 'Close';
   });
 }

@@ -7,6 +7,11 @@ const CAMERA_NEAR = 0.1;
 const CAMERA_FAR = 1000;
 const CAMERA_POSITION = { x: 120, y: 80, z: 130 };
 const CAMERA_LOOK_AT = { x: 30, y: 30, z: 0 };
+// Zoom control: multiplies distance from the world origin while preserving direction
+export let CAMERA_DISTANCE_MULTIPLIER = 1; // Adjust via UI later
+
+// Keep a reference to the active camera to support live updates
+let currentCamera = null;
 const RENDERER_ANTIALIAS = true;
 const SCENE_BG_COLOR = 0x111111;
 
@@ -38,16 +43,17 @@ export function setupEnvironment() {
     CAMERA_NEAR,
     CAMERA_FAR
   );
-  camera.position.set(
-    CAMERA_POSITION.x,
-    CAMERA_POSITION.y,
-    CAMERA_POSITION.z
-  );
+  const scaledCamX = CAMERA_POSITION.x * CAMERA_DISTANCE_MULTIPLIER;
+  const scaledCamY = CAMERA_POSITION.y * CAMERA_DISTANCE_MULTIPLIER;
+  const scaledCamZ = CAMERA_POSITION.z * CAMERA_DISTANCE_MULTIPLIER;
+  camera.position.set(scaledCamX, scaledCamY, scaledCamZ);
   camera.lookAt(
     CAMERA_LOOK_AT.x,
     CAMERA_LOOK_AT.y,
     CAMERA_LOOK_AT.z
   );
+  // store for live updates
+  currentCamera = camera;
 
   // Renderer
   const renderer = new THREE.WebGLRenderer({ antialias: RENDERER_ANTIALIAS });
@@ -122,8 +128,11 @@ export function addUpdater(fn) {
 const autoOrbit = {
   enabled: false,
   target: new THREE.Vector3(CAMERA_LOOK_AT.x, CAMERA_LOOK_AT.y, CAMERA_LOOK_AT.z),
-  radius: Math.hypot(CAMERA_POSITION.x - CAMERA_LOOK_AT.x, CAMERA_POSITION.z - CAMERA_LOOK_AT.z),
-  height: CAMERA_POSITION.y,
+  radius: Math.hypot(
+    CAMERA_POSITION.x * CAMERA_DISTANCE_MULTIPLIER - CAMERA_LOOK_AT.x,
+    CAMERA_POSITION.z * CAMERA_DISTANCE_MULTIPLIER - CAMERA_LOOK_AT.z
+  ),
+  height: CAMERA_POSITION.y * CAMERA_DISTANCE_MULTIPLIER,
   speed: 0.003,
   angle: 0,
 };
@@ -157,4 +166,34 @@ export function startRenderLoop({ scene, camera, renderer }, onUpdate) {
     renderer.render(scene, camera);
   }
   animate();
+}
+
+// Update multiplier and reposition camera/orbit live
+export function setCameraDistanceMultiplier(multiplier) {
+  if (!Number.isFinite(multiplier)) return;
+  // clamp to [0, 2]
+  const m = Math.max(0, Math.min(2, multiplier));
+  CAMERA_DISTANCE_MULTIPLIER = m;
+  // Recompute derived values
+  autoOrbit.radius = Math.hypot(
+    CAMERA_POSITION.x * m - CAMERA_LOOK_AT.x,
+    CAMERA_POSITION.z * m - CAMERA_LOOK_AT.z
+  );
+  autoOrbit.height = CAMERA_POSITION.y * m;
+  // Update camera immediately
+  if (currentCamera) {
+    const x = CAMERA_POSITION.x * m;
+    const y = CAMERA_POSITION.y * m;
+    const z = CAMERA_POSITION.z * m;
+    if (autoOrbit.enabled) {
+      // Keep orbit positioning consistent with new radius/height
+      const cx = autoOrbit.target.x + Math.cos(autoOrbit.angle) * autoOrbit.radius;
+      const cz = autoOrbit.target.z + Math.sin(autoOrbit.angle) * autoOrbit.radius;
+      currentCamera.position.set(cx, autoOrbit.height, cz);
+      currentCamera.lookAt(autoOrbit.target);
+    } else {
+      currentCamera.position.set(x, y, z);
+      currentCamera.lookAt(CAMERA_LOOK_AT.x, CAMERA_LOOK_AT.y, CAMERA_LOOK_AT.z);
+    }
+  }
 }
