@@ -7,37 +7,121 @@
     <style>
       html, body { height: 100%; margin: 0; background: #111; }
       canvas { display: block; }
+      #ui { 
+        position: fixed; top: 10px; left: 10px; z-index: 10;
+        max-width: 420px;
+        font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      }
+      .panel {
+        background: #222; color: #eee; border: 1px solid #444;
+        border-radius: 8px; margin-top: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,.4); 
+        padding: 10px;
+      }
+      .panel-header {
+        display: flex; align-items: center; justify-content: space-between;
+        border-bottom: 1px solid #333; border-top-left-radius:8px; border-top-right-radius:8px;
+        margin: -10px; margin-bottom: 10px; padding: 10px;
+        font-weight: 600;
+      }
+      textarea {
+        width: 100%; min-width: 200px; max-width: 100%;
+        background: #111; color: #cde;
+        border: 1px solid #555; border-radius: 6px;
+        padding: 8px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        resize: vertical; box-sizing: border-box;
+      }
+      button {
+        background:#4caf50;color:#fff;border:none;
+        padding:6px 12px;border-radius:6px;cursor:pointer;
+      }
+      .gray { color: #aaa; font-size: 12px; }
+      .error { color: #ff6b6b; min-height:1.4em; display:block;}
+      .row { display:flex; align-items:center; gap:10px; margin-bottom:8px; flex-wrap: wrap;}
+      label { color: #ccc; }
     </style>
   </head>
   <body>
-    <div id="ui" style="position:fixed;top:10px;left:10px;z-index:10;max-width:420px;font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;">
-      <div style="background:#222;color:#eee;border:1px solid #444;border-radius:8px;padding:10px 10px 8px;box-shadow:0 2px 8px rgba(0,0,0,.4)">
-        <div style="margin-bottom:6px;font-weight:600;">Blocks JSON</div>
-        <textarea id="blocks-json" spellcheck="false" style="width:300px;height:140px;resize:vertical;background:#111;color:#cde;border:1px solid #555;border-radius:6px;padding:8px;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;"></textarea>
-        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
-          <button id="send-btn" style="background:#4caf50;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">SEND</button>
-          <button id="download-obj" style="background:#607d8b;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">Download OBJ</button>
-          <span id="json-error" style="color:#ff6b6b;"></span>
+    <div id="ui">
+      <div class="panel">
+        <div class="panel-header">
+          DOT BOX | JSON to 3D
         </div>
-        <div style="margin-top:6px;color:#aaa;font-size:12px;">
+        <textarea id="blocks-json" spellcheck="false" style="height:100px;"></textarea>
+        <div class="row">
+          <button id="send-btn" style="background:#df3030;">SUBMIT</button>
+          <button id="download-obj" style="background:#607d8b;">Download OBJ</button>
+          <span id="json-error" class="error"></span>
+        </div>
+        <div class="gray">
           例: { "sizes": [[10,10,20]], "positions": [[5,5,10]] }
         </div>
       </div>
-      <div id="env-panel" style="margin-top:10px;background:#222;color:#eee;border:1px solid #444;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.4)">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 10px 8px;border-bottom:1px solid #333;border-top-left-radius:8px;border-top-right-radius:8px;">
-          <div style="font-weight:600;">Environment</div>
-          <button id="env-toggle" style="background:#333;color:#ddd;border:1px solid #555;padding:4px 10px;border-radius:6px;cursor:pointer;">Open</button>
+      <div class="panel">
+        <div class="panel-header">
+          JSON support | Make box
+          <button id="box-toggle" style="background:#333;color:#ddd;border:1px solid #555;padding:4px 10px;border-radius:6px;">Close</button>
         </div>
-        <div id="env-content" style="display:none;padding:10px 10px 12px;border-bottom-left-radius:8px;border-bottom-right-radius:8px;">
-          <label for="env-zoom" style="display:block;margin-bottom:6px;color:#ccc;">Camera Distance</label>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <input id="env-zoom" type="range" min="0" max="2" step="0.01" value="1" style="width:220px;" />
+        <div id="box-content" style="display:block;">
+          <div class="row" style="color:#ccc;">
+            <span>Parts:</span>
+            <label><input type="radio" name="box-scale" value="1" checked />Top</label>
+            <label><input type="radio" name="box-scale" value="2" />Side A</label>
+            <label><input type="radio" name="box-scale" value="3" />Side B</label>
+          </div>
+          <div class="row">
+            <label for="box-size-x">X</label>
+            <input id="box-size-x" type="number" min="1" step="1" value="40" style="width:48px;">
+            <label for="box-size-y">Y</label>
+            <input id="box-size-y" type="number" min="1" step="1" value="20" style="width:48px;">
+            <label for="box-size-z">Z</label>
+            <input id="box-size-z" type="number" min="1" step="1" value="30" style="width:48px;">
+          </div>
+          <button id="box-create-btn" style="background:#3f51b5;min-width:90px;">Create JSON</button>
+          <span id="box-json-error" class="error"></span>
+          <textarea id="box-json-output" spellcheck="false" placeholder="Generated JSON will appear here" style="height:60px;"></textarea>
+          <div class="row" style="margin-top:0;">
+            <button id="box-send-above" style="min-width:80px;">Send JSON Above</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          Environment
+          <button id="env-toggle" style="background:#333;color:#ddd;border:1px solid #555;padding:4px 10px;border-radius:6px;">Open</button>
+        </div>
+        <div id="env-content" style="display:none;">
+          <label for="env-zoom" style="display:block;margin-bottom:6px;">Camera Distance</label>
+          <div class="row">
+            <input id="env-zoom" type="range" min="0" max="2" step="0.01" value="1" style="width:180px;" />
             <span id="env-zoom-val" style="min-width:44px;text-align:right;color:#cde;">1.00x</span>
           </div>
-          <div style="margin-top:6px;color:#888;font-size:12px;">0.00 – 2.00</div>
+          <div class="gray">0.00 – 2.00</div>
         </div>
       </div>
     </div>
-    <script type="module" src="./src/main.js"></script>
+    <script type="module">
+      import './src/main.js';
+      // Remove setupPanelToggle for Environment panel (let main.js control it exclusively)
+      function setupPanelToggle(btnId, contentId) {
+        // boxパネルのみトグルを有効に
+        if (btnId === 'box-toggle') {
+          const btn = document.getElementById(btnId);
+          const content = document.getElementById(contentId);
+          if (btn && content) {
+            btn.textContent = 'Close';
+            content.style.display = 'block';
+            btn.addEventListener('click', () => {
+              const open = content.style.display !== 'none';
+              content.style.display = open ? 'none' : 'block';
+              btn.textContent = open ? 'Open' : 'Close';
+            });
+          }
+        }
+      }
+      setupPanelToggle('box-toggle', 'box-content');
+      // 環境パネル('env-toggle')のトグルはmain.jsに任せる
+      // setupPanelToggle('env-toggle', 'env-content');
+    </script>
   </body>
-  </html>
+</html>

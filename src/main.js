@@ -1,6 +1,7 @@
 import { setupEnvironment, startRenderLoop, enableCameraAutoOrbit, THREE, setCameraDistanceMultiplier, CAMERA_DISTANCE_MULTIPLIER } from './environment.js';
 import { createBlocks, parseBlocksJSON, setBlocksJSON, BLOCKS_JSON } from './block.js';
 import { exportOBJFromMeshes } from './exporters/obj.js';
+import { setupBoxMakingUI } from './box_json.js';
 
 // 環境の初期化
 const { scene, camera, renderer } = setupEnvironment();
@@ -125,3 +126,6 @@ if (envToggleBtn && envContent) {
     envToggleBtn.textContent = isOpen ? 'Open' : 'Close';
   });
 }
+
+// Box Making UI hookup
+try { setupBoxMakingUI(); } catch (_) { /* no-op */ }
