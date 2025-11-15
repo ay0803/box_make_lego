@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Three.js 10mm Cube</title>
+    <style>
+      html, body { height: 100%; margin: 0; background: #111; }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <div id="ui" style="position:fixed;top:10px;left:10px;z-index:10;max-width:420px;font:14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;">
+      <div style="background:#222;color:#eee;border:1px solid #444;border-radius:8px;padding:10px 10px 8px;box-shadow:0 2px 8px rgba(0,0,0,.4)">
+        <div style="margin-bottom:6px;font-weight:600;">Blocks JSON</div>
+        <textarea id="blocks-json" spellcheck="false" style="width:300px;height:140px;resize:vertical;background:#111;color:#cde;border:1px solid #555;border-radius:6px;padding:8px;font-family:ui-monospace, SFMono-Regular, Menlo, monospace;"></textarea>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+          <button id="send-btn" style="background:#4caf50;color:#fff;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;">SEND</button>
+          <span id="json-error" style="color:#ff6b6b;"></span>
+        </div>
+        <div style="margin-top:6px;color:#aaa;font-size:12px;">
+          例: { "sizes": [[10,10,20]], "positions": [[0,0,0]] }
+        </div>
+      </div>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+  </html>
