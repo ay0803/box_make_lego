@@ -20,6 +20,11 @@ const GRID_SIZE = 200;
 const GRID_DIVISIONS = 20;
 const GRID_COLOR = 0xffffff;
 const GRID_OPACITY = 0.25;
+// Axes helper to visualize X(red), Y(green), Z(blue) at origin
+const SHOW_AXES = true;
+const AXES_SIZE = GRID_SIZE * 1.5; // match grid half-extent so axes end at grid edge
+const AXES_COLOR = 0xF7F7F7;
+const AXES_OPACITY = 0.3; // 軸の透明度
 
 export function setupEnvironment() {
   // Scene
@@ -73,6 +78,29 @@ export function setupEnvironment() {
   gridHelper.material.opacity = GRID_OPACITY;
   gridHelper.material.transparent = true;
   scene.add(gridHelper);
+
+  // Axes helper at the world origin to clarify axis directions
+  if (SHOW_AXES) {
+    const axesHelper = new THREE.AxesHelper(AXES_SIZE);
+    // Override default RGB axis colors with pale white and set opacity
+    const applyColor = (mat) => {
+      if (!mat) return;
+      if ('vertexColors' in mat) mat.vertexColors = false;
+      if (mat.color) mat.color.set(AXES_COLOR);
+      if ('toneMapped' in mat) mat.toneMapped = false;
+      if ('opacity' in mat) {
+        mat.opacity = AXES_OPACITY;
+        mat.transparent = true;
+        mat.depthWrite = false; // ソートのため透明軸だけ
+      }
+    };
+    if (Array.isArray(axesHelper.material)) {
+      axesHelper.material.forEach(applyColor);
+    } else if (axesHelper.material) {
+      applyColor(axesHelper.material);
+    }
+    scene.add(axesHelper);
+  }
 
   // Resize handling
   window.addEventListener('resize', () => {

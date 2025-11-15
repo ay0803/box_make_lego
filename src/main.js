@@ -1,5 +1,6 @@
 import { setupEnvironment, startRenderLoop, enableCameraAutoOrbit, THREE } from './environment.js';
 import { createBlocks, parseBlocksJSON, setBlocksJSON, BLOCKS_JSON } from './block.js';
+import { exportOBJFromMeshes } from './exporters/obj.js';
 
 // 環境の初期化
 const { scene, camera, renderer } = setupEnvironment();
@@ -41,6 +42,7 @@ function renderFromJSON() {
 const input = document.getElementById('blocks-json');
 const sendBtn = document.getElementById('send-btn');
 const errorEl = document.getElementById('json-error');
+const downloadObjBtn = document.getElementById('download-obj');
 if (input) input.value = BLOCKS_JSON;
 if (sendBtn) {
   sendBtn.addEventListener('click', () => {
@@ -60,8 +62,38 @@ if (sendBtn) {
   });
 }
 
+// (GLB export removed by request)
+
+// Export current blocks as OBJ (geometry only; no .mtl)
+function exportBlocksAsOBJ() {
+  if (!currentMeshes.length) return;
+  try {
+    const objText = exportOBJFromMeshes(currentMeshes);
+    const blob = new Blob([objText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const ts = new Date().toISOString().replace(/[:.]/g, '-');
+    a.href = url;
+    a.download = `blocks-${ts}.obj`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  } catch (e) {
+    console.error('OBJ export error:', e);
+    if (errorEl) errorEl.textContent = 'OBJエクスポートに失敗しました';
+  }
+}
+
 // 初回描画
 renderFromJSON();
 
 // アニメーションループは環境側に委譲
 startRenderLoop({ scene, camera, renderer });
+
+if (downloadObjBtn) {
+  downloadObjBtn.addEventListener('click', () => {
+    errorEl && (errorEl.textContent = '');
+    exportBlocksAsOBJ();
+  });
+}
