@@ -1,7 +1,7 @@
 import { setupEnvironment, startRenderLoop, enableCameraAutoOrbit, THREE, setCameraDistanceMultiplier, CAMERA_DISTANCE_MULTIPLIER } from './environment.js';
-import { createBlocks, parseBlocksJSON, setBlocksJSON, BLOCKS_JSON } from './block.js';
+import { createBlocks, parseBlocksJSON, setBlocksJSON, BLOCKS_JSON } from './json_system.js';
 import { exportOBJFromMeshes } from './exporters/obj.js';
-import { setupBoxMakingUI } from './box_json.js';
+import { setupBoxMakingUI } from './JSON_support/make_box_json.js';
 
 // 環境の初期化
 const { scene, camera, renderer } = setupEnvironment();

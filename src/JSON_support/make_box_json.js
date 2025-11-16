@@ -77,3 +77,4 @@ export function setupBoxMakingUI() {
     blocks.value = out.value;
   });
 }
+

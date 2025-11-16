@@ -1,4 +1,5 @@
-import { THREE, DEFAULT_CYLINDER_SEGMENTS } from './environment.js';
+import { createBoxMesh } from './shapes/box.js';
+import { createCylinderMesh } from './shapes/cylinder.js';
 
 // JSONで配置を指定。色は全体デフォルトのみ。
 export const DEFAULT_BLOCK_COLOR = 0xffffff;
@@ -29,37 +30,6 @@ export let BLOCKS_JSON = `{
     ]
   }
 }`;
-
-function createCubeMesh(scene, size = [10, 10, 10], position = [0, 0, 0], color = DEFAULT_BLOCK_COLOR) {
-  const [sx, sy, sz] = size;
-  const [x, y, z] = position;
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(sx, sy, sz),
-    new THREE.MeshStandardMaterial({ color })
-  );
-  mesh.position.set(x, y, z);
-  scene.add(mesh);
-  return mesh;
-}
-
-function createCylinderMesh(scene, size = [10, 10], position = [0, 0, 0], color = DEFAULT_BLOCK_COLOR) {
-  const d = size?.[0];
-  const h = size?.[1];
-  // 後方互換: size[2] があっても無視して DEFAULT_CYLINDER_SEGMENTS を使う
-  const r = Math.max(0.0001, (Number(d) || 0) / 2);
-  const height = Math.max(0.0001, Number(h) || 0);
-  const segments = Math.max(3, Math.floor(Number(DEFAULT_CYLINDER_SEGMENTS) || 50));
-  const mesh = new THREE.Mesh(
-    new THREE.CylinderGeometry(r, r, height, segments),
-    new THREE.MeshStandardMaterial({ color })
-  );
-  const [x, y, z] = position;
-  mesh.position.set(x, y, z);
-  scene.add(mesh);
-  return mesh;
-}
-
-
 
 // BLOCKS_JSON をパースして size/position/color の配列に正規化
 export function parseBlocksJSON() {
@@ -93,7 +63,7 @@ export function parseBlocksJSON() {
 export const COLOR_PALETTE = [
   0xC0C0C0, 0x90CAF9, 0xA5D6A7, 0xFFE082, 0xFFAB91, 0xCE93D8
 ];
-function pickColor(index) {
+export function pickColor(index) {
   const p = COLOR_PALETTE;
   return p.length ? p[index % p.length] : DEFAULT_BLOCK_COLOR;
 }
@@ -115,6 +85,7 @@ export function createBlocks(scene) {
     const color = (Number.isFinite(b.color) ? b.color : pickColor(i));
     return b.type === 'cylinder'
       ? createCylinderMesh(scene, b.size, b.position, color)
-      : createCubeMesh(scene, b.size, b.position, color);
+      : createBoxMesh(scene, b.size, b.position, color);
   });
 }
+
