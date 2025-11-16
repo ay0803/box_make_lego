@@ -1,64 +1,59 @@
-# box_make_lego
+DOT BOXは、DOTのついた箱をつくることのできるツールです。JSON で直方体や円柱を配置して、Three.js で即時に描画する仕組みになっているので、箱以外のものも制作できるかもしれません。ページ内のエディタで JSON を編集して送信すると、シーンがクリアされて再描画されます。OBJ 形式でのエクスポートにも対応しているため、家庭用の3Dプリンタで印刷して組み立てることができます。
 
-Simple Three.js playground to place multiple rectangular blocks by JSON.
+**公開URL（GitHub Pages）**
+- https://ay0803.github.io/box_make_lego/
+- ブラウザ上で JSON を送信して 3D を作成できます。
+- 箱を作るための JSONコードを作成するためのサポート機能があります。さまざまな設定にチェックを入れて、JSONコードをつくりましょう。作ったJSONを、送信ボックスに送ることができます。SUBMITすることで、シーンに描画されます。
 
-**What’s Inside**
-- Minimal Three.js scene (CDN) with lights and grid
-- JSON-driven block layout (sizes/positions)
-- In‑page editor (textarea + SEND) to live‑update layout
-- Stable color palette (LEGO‑inspired) with deterministic pick
+**主な機能**
+- Three.js（CDN）による最小構成の 3D シーン（ライト・グリッド・軸）
+- JSON 駆動のレイアウト（サイズ・位置・色）
+- ページ内エディタ（テキストエリア + SUBMIT）でのライブ更新
+- LEGO 風の安定したカラーパレット（未指定時に自動割り当て）
+- OBJ 形式エクスポート（ジオメトリのみ）
 
-**Run Locally**
-- Open `index.html` in your browser, or serve statically:
-  - `python3 -m http.server` and open the shown URL
+**動かし方**
+- `index.html` をブラウザで開きます。
+https://ay0803.github.io/box_make_lego/
 
-**Edit Blocks (UI)**
-- Top‑left panel shows the current JSON. Edit and click `SEND`.
-- On success, scene clears and re‑renders from the JSON.
-- Parse errors show in red next to the button.
+**UI の使い方**
+- 画面左上のパネルに現在の JSON が表示されます。編集して `SUBMIT` を押すと、パースに成功した場合に再描画されます。エラーはボタン横に赤字で表示されます。
+- `Download OBJ` ボタンで、現在のメッシュ群を 1 つの OBJ ファイルとしてダウンロードできます（.mtl などのマテリアルは含みません）。
+- `Environment` パネルではカメラ距離倍率（0.00〜2.00）をスライダーで変更できます。シーンの中心付近を自動で周回するカメラに反映されます。
+- `JSON support | Make box` パネルでは、箱の外形に使える JSONコードを生成できます（Top / Side A / Side B を選択、X/Y/Z を入力して `Create JSON`）。`Send JSON Above` で上のエディタへ転記できます（描画は上段の `SUBMIT` でシーンに送信するまで変更されません）。
 
-**JSON Schema**
-- Recommended (paired arrays):
+**JSON 仕様**
+- このシステムは、独自のJSONシステムを使用しています。
+- 形状タイプごとに `sizes` と `positions` を配列で並べます。対応タイプは `box` と `cylinder` です。
+  - `box.sizes`: `[x, y, z]` の配列
+  - `box.positions`: `[x, y, z]` の配列
+  - `cylinder.sizes`: `[diameter, height]` の配列（円柱の円周分割数は固定）
+  - `cylinder.positions`: `[x, y, z]` の配列
+  - 各タイプ配下に `colors`（数値、例: `0xC91A09`）の配列を指定可能。省略時はパレットから自動で割り当てます。
+- `sizes` と `positions` の配列長は一致させるのが推奨です。不足分は先頭要素で補完されます。
+- 例:
 ```
 {
-  "sizes": [[10,10,20], [20,5,10], [10,10,20], [10,5,50]],
-  "positions": [[-22,0,0], [0,0,0], [22,0,0], [0,15,22]]
+  "box": {
+    "sizes": [[10,10,20], [20,5,10], [10,10,20], [10,5,50]],
+    "positions": [[17,5,10], [5,0,10], [27,0,10], [5,0,40]]
+  },
+  "cylinder": {
+    "sizes": [[10,20]],
+    "positions": [[27,5,10]]
+  }
 }
 ```
-- Also supported (explicit list):
-```
-{
-  "blocks": [
-    { "size": [10,10,20], "position": [-22,0,0] },
-    { "size": [20, 5,10], "position": [  0,0,0] },
-    { "size": [10,10,20], "position": [ 22,0,0] },
-    { "size": [10, 5,50], "position": [  0,15,22] }
-  ]
-}
-```
-- Optional: each block can include `"color": 0xC91A09`. If omitted, a palette color is picked deterministically.
 
-**Repo Setup (Git/GitHub)**
-- Initialize and push (SSH):
-```
-git init
-git add .
-git commit -m "three.js blocks + JSON editor"
-git branch -M main
-git remote add origin git@github.com:ay0803/box_make_lego.git
-git push -u origin main
-```
-- Or HTTPS (use a Personal Access Token for the password prompt):
-```
-git remote add origin https://github.com/ay0803/box_make_lego.git
-git push -u origin main
-```
+**色について**
+- `colors` を各タイプに指定しない場合、内部のカラーパレットから安定的に割り当てます。
+- 同じ並び順であれば、再描画しても同じ色が適用されます。
 
-**GitHub Pages**
-- In the repo: Settings → Pages → Branch: `main`, Folder: `/root` → Save
-- After a few minutes, it should be live at:
-  - https://ay0803.github.io/box_make_lego/
+**OBJ エクスポート**
+- メッシュをワールド座標に変換したうえで、1 つの OBJ テキストにまとめて出力します。
+- 出力はジオメトリのみ（マテリアル/テクスチャは含みません）。
 
-**Notes**
-- Colors come from a LEGO‑inspired palette and remain stable for the same size/position set.
-- To hard‑lock colors, include `"color"` per block in the JSON.
+**開発メモ**
+- Three.js は `https://unpkg.com/three@0.160.0/build/three.module.js` を利用しています。
+- 円柱の円周分割数は実装で固定（既定値 50）です。
+- 既存の JSON を大きく変更する場合は、各配列の整合性（長さ・値の次元）に注意してください。
