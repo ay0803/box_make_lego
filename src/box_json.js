@@ -8,18 +8,35 @@ export function makeBoxJSON(x, y, z, scale = 1) {
 
   if (!(x > 0 && y > 0 && z > 0)) return '';
 
-  // チェックボタン式なので else は考えにくい (kは1,2,3のみのはず)
+  // 最小限の丸め（小数第3位まで）。構造は固定なので配列だけ丸める。
+  const q = (n) => {
+    const v = Number(n);
+    if (!Number.isFinite(v)) return v;
+    return Math.round(v * 1000) / 1000;
+  };
+
   if (k === 1) {
-    return JSON.stringify({"sizes": [[x,1,z],[1,2,z],[1,2,z],[x-2,2,1],[x-2,2,1],[1,2,z-4],[1,2,z-4],[x-6,2,1],[x-6,2,1]],"positions": [[0,0,0],[(x-1)/2,3/2,0],[-(x-1)/2,3/2,0],[0,3/2,(z-1)/2],[0,3/2,-(z-1)/2],[(x-5)/2,3/2,0],[-(x-5)/2,3/2,0],[0,3/2,(z-5)/2],[0,3/2,-(z-5)/2]]});
+    const sizes = [[x,1,z],[1,2,z],[1,2,z],[x-2,2,1],[x-2,2,1],[1,2,z-4],[1,2,z-4],[x-6,2,1],[x-6,2,1]];
+    const positions = [[0,0,0],[(x-1)/2,3/2,0],[-(x-1)/2,3/2,0],[0,3/2,(z-1)/2],[0,3/2,-(z-1)/2],[(x-5)/2,3/2,0],[-(x-5)/2,3/2,0],[0,3/2,(z-5)/2],[0,3/2,-(z-5)/2]];
+    const qs = sizes.map(a => a.map(q));
+    const qp = positions.map(a => a.map(q));
+    return JSON.stringify({ box: { sizes: qs, positions: qp } });
   }
   if (k === 2) {
-    return JSON.stringify({"sizes": [[x-2,1,y-2],[1,1,y-5],[1,1,y-5],[x,1,y-5]],"positions": [[0,0,0],[(x-1)/2,0,0],[-(x-1)/2,0,0],[0,1,0]]});
+    const sizes = [[x-2,1,y-2],[1,1,y-5],[1,1,y-5],[x,1,y-5]];
+    const positions = [[0,0,0],[(x-1)/2,0,0],[-(x-1)/2,0,0],[0,1,0]];
+    const qs = sizes.map(a => a.map(q));
+    const qp = positions.map(a => a.map(q));
+    return JSON.stringify({ box: { sizes: qs, positions: qp } });
   }
   if (k === 3) {
-    return JSON.stringify({"sizes": [[z-4,1,y-2],[z-4,1,y-5]], "positions": [[0,0,0],[0,1,0]]});
+    const sizes = [[z-4,1,y-2],[z-4,1,y-5]];
+    const positions = [[0,0,0],[0,1,0]];
+    const qs = sizes.map(a => a.map(q));
+    const qp = positions.map(a => a.map(q));
+    return JSON.stringify({ box: { sizes: qs, positions: qp } });
   }
-  return JSON.stringify({sizes: [[1, 1, 1]],positions: [[0, 0, 0]]
-  });
+  return JSON.stringify({ box: { sizes: [[1, 1, 1]], positions: [[0, 0, 0]] } });
 }
 
 export function setupBoxMakingUI() {

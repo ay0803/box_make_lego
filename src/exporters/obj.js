@@ -21,22 +21,12 @@ export function exportOBJFromMeshes(meshes = []) {
   for (let i = 0; i < meshes.length; i++) {
     const mesh = meshes[i];
     if (!mesh || !(mesh.isMesh) || !mesh.geometry) continue;
-
-    // Ensure world matrices are up to date
     mesh.updateWorldMatrix(true, false);
-
-    let geom = mesh.geometry;
+    const geom = mesh.geometry;
     if (!geom.isBufferGeometry) continue;
-    // Work on a non-indexed clone so we can write faces sequentially
-    let g = geom.index ? geom.toNonIndexed() : geom.clone();
-
-    // Transform vertices to world space
+    const g = geom.index ? geom.toNonIndexed() : geom.clone();
     g.applyMatrix4(mesh.matrixWorld);
-
-    // Ensure normals exist, then transform to world space
-    if (!g.getAttribute('normal')) {
-      g.computeVertexNormals();
-    }
+    if (!g.getAttribute('normal')) g.computeVertexNormals();
     normalMatrix.getNormalMatrix(mesh.matrixWorld);
     const nAttr = g.getAttribute('normal');
     if (nAttr) {
@@ -45,36 +35,26 @@ export function exportOBJFromMeshes(meshes = []) {
         nAttr.setXYZ(j, tmp.x, tmp.y, tmp.z);
       }
     }
-
     const pAttr = g.getAttribute('position');
     const uvAttr = g.getAttribute('uv');
     const hasUV = !!uvAttr;
     const hasN = !!nAttr;
     if (!pAttr || pAttr.count === 0) continue;
-
     const name = mesh.name && String(mesh.name).trim() ? mesh.name : `Mesh_${i}`;
     lines.push(`o ${name}`);
-
-    // v
     for (let j = 0; j < pAttr.count; j++) {
       lines.push(`v ${toFixed(pAttr.getX(j))} ${toFixed(pAttr.getY(j))} ${toFixed(pAttr.getZ(j))}`);
     }
-
-    // vt
     if (hasUV) {
       for (let j = 0; j < uvAttr.count; j++) {
         lines.push(`vt ${toFixed(uvAttr.getX(j))} ${toFixed(uvAttr.getY(j))}`);
       }
     }
-
-    // vn
     if (hasN) {
       for (let j = 0; j < nAttr.count; j++) {
         lines.push(`vn ${toFixed(nAttr.getX(j))} ${toFixed(nAttr.getY(j))} ${toFixed(nAttr.getZ(j))}`);
       }
     }
-
-    // faces: each triplet becomes one f
     for (let j = 0; j < pAttr.count; j += 3) {
       const a = vOffset + j + 1;
       const b = vOffset + j + 2;
@@ -93,7 +73,6 @@ export function exportOBJFromMeshes(meshes = []) {
         lines.push(`f ${a} ${b} ${c}`);
       }
     }
-
     vOffset += pAttr.count;
     if (hasUV) vtOffset += uvAttr.count;
     if (hasN) vnOffset += nAttr.count;
@@ -101,4 +80,3 @@ export function exportOBJFromMeshes(meshes = []) {
 
   return lines.join('\n') + '\n';
 }
-

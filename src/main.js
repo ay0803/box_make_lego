@@ -52,14 +52,11 @@ if (input) input.value = BLOCKS_JSON;
 if (sendBtn) {
   sendBtn.addEventListener('click', () => {
     errorEl && (errorEl.textContent = '');
-    let text = input && input.value ? String(input.value) : '';
+    const text = input && input.value ? String(input.value) : '';
     try {
-      const tmp = JSON.parse(text);
-      if (!Array.isArray(tmp?.blocks) && !Array.isArray(tmp?.sizes) && !Array.isArray(tmp?.positions)) {
-        throw new Error('blocks または sizes/positions が必要です');
-      }
+      JSON.parse(text); // 形式だけ確認（詳細判定はパーサに任せる）
     } catch (e) {
-      if (errorEl) errorEl.textContent = 'JSON パースエラー: ' + (e?.message || e);
+      errorEl && (errorEl.textContent = 'JSON パースエラー: ' + (e?.message || e));
       return;
     }
     setBlocksJSON(text);

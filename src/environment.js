@@ -1,6 +1,10 @@
 import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
 export { THREE };
 
+// Geometry defaults
+// 円柱のセグメント数（円周分割数）。円柱としてのみ使うため固定化。
+export const DEFAULT_CYLINDER_SEGMENTS = 50;
+
 // Environment and renderer configuration
 const CAMERA_FOV = 60;
 const CAMERA_NEAR = 0.1;
