@@ -1,5 +1,6 @@
 import { createBoxMesh } from './shapes/box.js';
 import { createCylinderMesh } from './shapes/cylinder.js';
+import { createTubeMesh } from './shapes/tube.js';
 
 // JSONで配置を指定。色は全体デフォルトのみ。
 export const DEFAULT_BLOCK_COLOR = 0xffffff;
@@ -11,13 +12,11 @@ export let BLOCKS_JSON = `{
     "sizes": [
       [10,10,20],
       [20, 5,10],
-      [10,10,20],
       [10, 5,50]
     ],
     "positions": [
       [17, 5, 10],
       [ 5, 0, 10],
-      [27, 0, 10],
       [ 5, 0, 40]
     ]
   },
@@ -26,7 +25,15 @@ export let BLOCKS_JSON = `{
       [10,20]
     ],
     "positions": [
-      [27, 5, 10]
+      [30, 10, 10]
+    ]
+  }, 
+  "tube": { 
+    "sizes": [ 
+      [5,10,15] 
+    ],
+    "positions": [
+      [45, 5, 10]
     ]
   }
 }`;
@@ -36,13 +43,13 @@ export function parseBlocksJSON() {
   try {
     const data = JSON.parse(BLOCKS_JSON);
     const out = [];
-    for (const type of ['box', 'cylinder']) {
+    for (const type of ['box', 'cylinder', 'tube']) {
       const g = data?.[type];
       if (!g) continue;
       const sizes = Array.isArray(g.sizes) ? g.sizes : [];
       const positions = Array.isArray(g.positions) ? g.positions : [];
       const colors = Array.isArray(g.colors) ? g.colors : null;
-      const defSize = type === 'cylinder' ? [10, 10] : [10, 10, 10];
+      const defSize = type === 'cylinder' ? [10, 10] : (type === 'tube' ? [4, 10, 10] : [10, 10, 10]);
       const defPos = [0, 0, 0];
       const n = Math.max(sizes.length, positions.length);
       for (let i = 0; i < n; i++) {
@@ -83,9 +90,8 @@ export function createBlocks(scene) {
   if (!items) return [];
   return items.map((b, i) => {
     const color = (Number.isFinite(b.color) ? b.color : pickColor(i));
-    return b.type === 'cylinder'
-      ? createCylinderMesh(scene, b.size, b.position, color)
-      : createBoxMesh(scene, b.size, b.position, color);
+    if (b.type === 'cylinder') return createCylinderMesh(scene, b.size, b.position, color);
+    if (b.type === 'tube') return createTubeMesh(scene, b.size, b.position, color);
+    return createBoxMesh(scene, b.size, b.position, color);
   });
 }
-

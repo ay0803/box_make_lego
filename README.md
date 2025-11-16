@@ -24,11 +24,13 @@ https://ay0803.github.io/box_make_lego/
 
 **JSON 仕様**
 - このシステムは、独自のJSONシステムを使用しています。
-- 形状タイプごとに `sizes` と `positions` を配列で並べます。対応タイプは `box` と `cylinder` です。
+- 形状タイプごとに `sizes` と `positions` を配列で並べます。対応タイプは `box` / `cylinder` / `tube` です。
   - `box.sizes`: `[x, y, z]` の配列
   - `box.positions`: `[x, y, z]` の配列
   - `cylinder.sizes`: `[diameter, height]` の配列（円柱の円周分割数は固定）
   - `cylinder.positions`: `[x, y, z]` の配列
+  - `tube.sizes`: `[innerDiameter, outerDiameter, height]` の配列（外径 > 内径）
+  - `tube.positions`: `[x, y, z]` の配列
   - 各タイプ配下に `colors`（数値、例: `0xC91A09`）の配列を指定可能。省略時はパレットから自動で割り当てます。
 - `sizes` と `positions` の配列長は一致させるのが推奨です。不足分は先頭要素で補完されます。
 - 例:
@@ -41,6 +43,10 @@ https://ay0803.github.io/box_make_lego/
   "cylinder": {
     "sizes": [[10,20]],
     "positions": [[27,5,10]]
+  },
+  "tube": {
+    "sizes": [[4,10,15]],
+    "positions": [[35,7.5,10]]
   }
 }
 ```
