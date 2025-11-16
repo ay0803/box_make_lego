@@ -64,8 +64,6 @@ if (sendBtn) {
   });
 }
 
-// (GLB export removed by request)
-
 // Export current blocks as OBJ (geometry only; no .mtl)
 function exportBlocksAsOBJ() {
   if (!currentMeshes.length) return;
