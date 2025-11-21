@@ -106,16 +106,22 @@ function buildPartByK(x, y, z, k, l = 1) {
       };
     }
     if (k === 2) {
-      const b_sizes = [[dotx-2,1,doty-2],[1,1,doty-5],[1,1,doty-5],[dotx,1,doty-5]];
-      const b_positions = [[0,0,0],[(dotx-1)/2,0,0],[-(dotx-1)/2,0,0],[0,1,0]];
+      const b_sizes = [[dotx-2,1,doty-2+1],[1,1,doty-5+1],[1,1,doty-5+1],[dotx,2,1],[dotx,2,1],[3,2,doty-5-1],[3,2,doty-5-1]];
+      const b_positions = [[0,0,0],[(dotx-1)/2,0,0],[-(dotx-1)/2,0,0],[0,1.5,(doty-5+1-1)/2],[0,1.5,-(doty-5+1-1)/2],[(dotx-2-1)/2,1.5,0],[-(dotx-2-1)/2,1.5,0]];
       const b_qs = b_sizes.map(a => a.map(q));
       const b_qp = b_positions.map(a => a.map(q));
       const c_sizes = [];
       const c_positions = [];
       const c_qs = c_sizes.map(a => a.map(q));
       const c_qp = c_positions.map(a => a.map(q));
-      const t_sizes = [ [5.1,6.6,2],[5.1,6.6,2],[5.1,6.6,2] ];
-      const t_positions = [ [0, 1.5, 0],[-8, 1.5, 0],[8, 1.5, 0]];
+      //const t_sizes = [ [5.1,6.6,2],[5.1,6.6,2],[5.1,6.6,2] ];
+      const t_sizes = [];
+      for (let i = 1; i <= x-1; i++) for (let j = 1; j <= y-1; j++) t_sizes.push([5.1, 6.6, 2]);
+      //const t_positions = [ [0, 1.5, 0],[-8, 1.5, 0],[8, 1.5, 0]];
+      const t_positions = [];
+      for (let i = 1; i <= x-1; i++) for (let j = 1; j <= y-1; j++) { let xpos = (i % 2 === 0 ? -4 * (i - 1) : 4 * i)+ (x % 2 === 0 ? -4 : 0) ; 
+        let zpos = (j % 2 === 0 ? -4 * (j - 1) : +4 * j)+ (y % 2 === 0 ? -4 : 0); 
+          t_positions.push([xpos, 1.5, zpos]); }
       const t_qs = t_sizes.map(a => a.map(q));
       const t_qp = t_positions.map(a => a.map(q));
       return {
@@ -125,16 +131,22 @@ function buildPartByK(x, y, z, k, l = 1) {
       };
     }
     if (k === 3) {
-      const b_sizes = [[dotz-4,1,doty-2],[dotz-4,1,doty-5]];
-      const b_positions = [[0,0,0],[0,1,0]];
+      const b_sizes = [[dotz-4,1,doty-2+1],[dotz-4,2,1],[dotz-4,2,1],[1,2,doty-5-1],[1,2,doty-5-1]];
+      const b_positions = [[0,0,0],[0,1.5,-(doty-2+1-4)/2],[0,1.5,(doty-2+1-4)/2],[-(dotz-4-1)/2,1.5,0],[(dotz-4-1)/2,1.5,0]];
       const b_qs = b_sizes.map(a => a.map(q));
       const b_qp = b_positions.map(a => a.map(q));
       const c_sizes = [];
       const c_positions = [];
       const c_qs = c_sizes.map(a => a.map(q));
       const c_qp = c_positions.map(a => a.map(q));
-      const t_sizes = [ [5.1,6.6,2],[5.1,6.6,2]];
-      const t_positions = [ [4, 1.5, 0],[-4, 1.5, 0]];
+      //const t_sizes = [ [5.1,6.6,2],[5.1,6.6,2]];
+      const t_sizes = [];
+      for (let i = 1; i <= y-1; i++) for (let j = 1; j <= z-1; j++) t_sizes.push([5.1, 6.6, 2]);
+      //const t_positions = [ [4, 1.5, 0],[-4, 1.5, 0]];
+      const t_positions = [];
+      for (let i = 1; i <= y-1; i++) for (let j = 1; j <= z-1; j++) { let zpos = (i % 2 === 0 ? -4 * (i - 1) : 4 * i)+ (y % 2 === 0 ? -4 : 0) ; 
+        let xpos = (j % 2 === 0 ? -4 * (j - 1) : +4 * j)+ (z % 2 === 0 ? -4 : 0); 
+          t_positions.push([xpos, 1.5, zpos]); }
       const t_qs = t_sizes.map(a => a.map(q));
       const t_qp = t_positions.map(a => a.map(q));
       return {
