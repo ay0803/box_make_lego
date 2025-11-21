@@ -9,6 +9,17 @@ export const DEFAULT_CYLINDER_SEGMENTS = 50;
 export const DOT_DIAMETER_MM = 5.1; // stud diameter (fixed)
 export const DOT_SPACING_MM = 8.0;  // stud pitch/spacing (fixed)
 
+// OBJダウンロード用フラグ（0: off, 1: on、初期値off）
+// Download OBJボタンは初期状態で一度も表示しない（style.display='none'固定）
+
+export let OBJ_DOWNLOAD = 0;
+
+// 0 or 1 のみをセットする（それ以外は 0 とみなす）
+// DOM操作は行わず、UI制御はindex.html側で行います。
+export function setObjDownload(v) {
+  OBJ_DOWNLOAD = v === 1 ? 1 : 0;
+}
+
 // Environment and renderer configuration
 const CAMERA_FOV = 60;
 const CAMERA_NEAR = 0.1;

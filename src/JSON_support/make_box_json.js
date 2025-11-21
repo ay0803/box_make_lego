@@ -48,6 +48,8 @@ export function setupBoxMakingUI() {
   const out = document.getElementById('box-json-output');
   const blocks = document.getElementById('blocks-json');
   const sendBtn = document.getElementById('box-send-above');
+  const directBtn = document.getElementById('box-direct-submit');
+  const topSubmitBtn = document.getElementById('send-btn');
 
   if (!cBtn) return;
 
@@ -76,5 +78,18 @@ export function setupBoxMakingUI() {
     err && (err.textContent = '');
     blocks.value = out.value;
   });
-}
 
+  // DIRECT SUBMIT: 外側から擬似的に「Send JSON Above」→「SUBMIT」の順に押す
+  directBtn && directBtn.addEventListener('click', () => {
+    if (!out || !blocks) return;
+    if (!out.value.trim()) {
+      err && (err.textContent = '送信するJSONがありません');
+      return;
+    }
+    err && (err.textContent = '');
+    // まず既存の「Send JSON Above」をクリック
+    sendBtn && sendBtn.click();
+    // すぐに最上段のSUBMITをクリック（値反映後に行うため微小ディレイ）
+    setTimeout(() => { topSubmitBtn && topSubmitBtn.click(); }, 0);
+  });
+}

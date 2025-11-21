@@ -61,9 +61,9 @@
       <div class="panel">
         <div class="panel-header">
           JSON support | Make box
-          <button id="box-toggle" style="background:#333;color:#ddd;border:1px solid #555;padding:4px 10px;border-radius:6px;">Close</button>
+          <button id="box-toggle" style="background:#333;color:#ddd;border:1px solid #555;padding:4px 10px;border-radius:6px;">Open</button>
         </div>
-        <div id="box-content" style="display:block;">
+        <div id="box-content" style="display:none;">
           <div class="row" style="color:#ccc;">
             <span>Parts:</span>
             <label><input type="radio" name="box-scale" value="1" checked />Top</label>
@@ -84,19 +84,20 @@
           <textarea id="box-json-output" spellcheck="false" placeholder="Generated JSON will appear here" style="height:60px;"></textarea>
           <div class="row" style="margin-top:0;">
             <button id="box-send-above" style="min-width:80px;">Send JSON Above</button>
+            <button id="box-direct-submit" style="min-width:110px;background:#df3030;">DIRECT SUBMIT</button>
           </div>
         </div>
       </div>
       <div class="panel">
         <div class="panel-header">
           JSON support | dot Make box
-          <button id="dot-box-toggle" style="background:#333;color:#ddd;border:1px solid #555;padding:4px 10px;border-radius:6px;">Open</button>
+          <button id="dot-box-toggle" style="background:#333;color:#ddd;border:1px solid #555;padding:4px 10px;border-radius:6px;">Close</button>
         </div>
-        <div id="dot-box-content" style="display:none;">
+        <div id="dot-box-content" style="display:block;">
           <div class="row" style="color:#ccc;">
             <span>Parts:</span>
-            <label><input type="radio" name="dot-box-scale" value="1" checked />Top</label>
-            <label><input type="radio" name="dot-box-scale" value="2" />Side A</label>
+            <label><input type="radio" name="dot-box-scale" value="1" />Top</label>
+            <label><input type="radio" name="dot-box-scale" value="2" checked />Side A</label>
             <label><input type="radio" name="dot-box-scale" value="3" />Side B</label>
           </div>
           <div class="row" style="color:#ccc;">
@@ -118,6 +119,7 @@
           <textarea id="dot-box-json-output" spellcheck="false" placeholder="Generated JSON will appear here" style="height:60px;"></textarea>
           <div class="row" style="margin-top:0;">
             <button id="dot-box-send-above" style="min-width:80px;">Send JSON Above</button>
+            <button id="dot-box-direct-submit" style="min-width:110px;background:#df3030;">DIRECT SUBMIT</button>
           </div>
         </div>
       </div>
@@ -138,6 +140,7 @@
     </div>
     <script type="module">
       import './src/main.js';
+      import { OBJ_DOWNLOAD } from './src/environment.js';
       // Remove setupPanelToggle for Environment panel (let main.js control it exclusively)
       function setupPanelToggle(btnId, contentId) {
         // box と dot-box パネルのみトグルを有効に
@@ -159,6 +162,14 @@
       setupPanelToggle('dot-box-toggle', 'dot-box-content');
       // 環境パネル('env-toggle')のトグルはmain.jsに任せる
       // setupPanelToggle('env-toggle', 'env-content');
+
+      // OBJダウンロードボタンの表示/非表示を環境フラグで制御
+      (function applyObjButtonVisibility() {
+        try {
+          const btn = document.getElementById('download-obj');
+          if (btn) btn.style.display = (OBJ_DOWNLOAD === 1 ? '' : 'none');
+        } catch (_) {}
+      })();
     </script>
   </body>
 </html>
