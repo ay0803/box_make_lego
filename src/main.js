@@ -1,6 +1,7 @@
 import { setupEnvironment, startRenderLoop, enableCameraAutoOrbit, THREE, setCameraDistanceMultiplier, CAMERA_DISTANCE_MULTIPLIER } from './environment.js';
 import { createBlocks, parseBlocksJSON, setBlocksJSON, BLOCKS_JSON } from './json_system.js';
 import { exportOBJFromMeshes } from './exporters/obj.js';
+import { exportSTLFromMeshes } from './exporters/stl.js';
 import { setupBoxMakingUI } from './JSON_support/make_box_json.js';
 
 // 環境の初期化
@@ -44,6 +45,7 @@ const input = document.getElementById('blocks-json');
 const sendBtn = document.getElementById('send-btn');
 const errorEl = document.getElementById('json-error');
 const downloadObjBtn = document.getElementById('download-obj');
+const downloadStlBtn = document.getElementById('download-stl');
 const zoomSlider = document.getElementById('env-zoom');
 const zoomVal = document.getElementById('env-zoom-val');
 const envToggleBtn = document.getElementById('env-toggle');
@@ -85,6 +87,26 @@ function exportBlocksAsOBJ() {
   }
 }
 
+function exportBlocksAsSTL() {
+  if (!currentMeshes.length) return;
+  try {
+    const stlText = exportSTLFromMeshes(currentMeshes);
+    const blob = new Blob([stlText], { type: 'model/stl' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const ts = new Date().toISOString().replace(/[:.]/g, '-');
+    a.href = url;
+    a.download = `blocks-${ts}.stl`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  } catch (e) {
+    console.error('STL export error:', e);
+    if (errorEl) errorEl.textContent = 'STLエクスポートに失敗しました';
+  }
+}
+
 // 初回描画
 renderFromJSON();
 
@@ -95,6 +117,13 @@ if (downloadObjBtn) {
   downloadObjBtn.addEventListener('click', () => {
     errorEl && (errorEl.textContent = '');
     exportBlocksAsOBJ();
+  });
+}
+
+if (downloadStlBtn) {
+  downloadStlBtn.addEventListener('click', () => {
+    errorEl && (errorEl.textContent = '');
+    exportBlocksAsSTL();
   });
 }
 

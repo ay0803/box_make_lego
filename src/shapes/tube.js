@@ -23,9 +23,10 @@ export function createTubeMesh(
 
   // Create a ring shape (annulus) centered at origin on XY plane
   const shape = new THREE.Shape();
-  shape.absarc(0, 0, rOut, 0, Math.PI * 2, false);
+  // Use opposite windings for outer and inner to ensure correct solid caps
+  shape.absarc(0, 0, rOut, 0, Math.PI * 2, true);
   const hole = new THREE.Path();
-  hole.absarc(0, 0, rIn, 0, Math.PI * 2, true);
+  hole.absarc(0, 0, rIn, 0, Math.PI * 2, false);
   shape.holes.push(hole);
 
   const segments = Math.max(3, Math.floor(Number(DEFAULT_CYLINDER_SEGMENTS) || 50));
@@ -47,4 +48,3 @@ export function createTubeMesh(
   scene.add(mesh);
   return mesh;
 }
-

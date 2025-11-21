@@ -19,6 +19,7 @@ https://ay0803.github.io/box_make_lego/
 **UI の使い方**
 - 画面左上のパネルに現在の JSON が表示されます。編集して `SUBMIT` を押すと、パースに成功した場合に再描画されます。エラーはボタン横に赤字で表示されます。
 - `Download OBJ` ボタンで、現在のメッシュ群を 1 つの OBJ ファイルとしてダウンロードできます（.mtl などのマテリアルは含みません）。
+ - `Download STL` も用意しています。3Dプリンタでの印刷用途では STL の利用を推奨します（多くのスライサーで安定）。
 - `Environment` パネルではカメラ距離倍率（0.00〜2.00）をスライダーで変更できます。シーンの中心付近を自動で周回するカメラに反映されます。
 - `JSON support | Make box` パネルでは、箱の外形に使える JSONコードを生成できます（Top / Side A / Side B を選択、X/Y/Z を入力して `Create JSON`）。`Send JSON Above` で上のエディタへ転記できます（描画は上段の `SUBMIT` でシーンに送信するまで変更されません）。
 
@@ -27,7 +28,7 @@ https://ay0803.github.io/box_make_lego/
 - 形状タイプごとに `sizes` と `positions` を配列で並べます。対応タイプは `box` / `cylinder` / `tube` です。
   - `box.sizes`: `[x, y, z]` の配列
   - `box.positions`: `[x, y, z]` の配列
-  - `cylinder.sizes`: `[diameter, height]` の配列（円柱の円周分割数は固定）
+  - `cylinder.sizes`: `[diameter, height]` の配列（円柱の円周分割数は固定、上下キャップ付き）
   - `cylinder.positions`: `[x, y, z]` の配列
   - `tube.sizes`: `[innerDiameter, outerDiameter, height]` の配列（外径 > 内径）
   - `tube.positions`: `[x, y, z]` の配列
