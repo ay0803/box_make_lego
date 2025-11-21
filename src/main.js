@@ -3,6 +3,7 @@ import { createBlocks, parseBlocksJSON, setBlocksJSON, BLOCKS_JSON } from './jso
 import { exportOBJFromMeshes } from './exporters/obj.js';
 import { exportSTLFromMeshes } from './exporters/stl.js';
 import { setupBoxMakingUI } from './JSON_support/make_box_json.js';
+import { setupDotBoxMakingUI } from './JSON_support/dot_make_box_json.js';
 
 // 環境の初期化
 const { scene, camera, renderer } = setupEnvironment();
@@ -153,3 +154,5 @@ if (envToggleBtn && envContent) {
 
 // Box Making UI hookup
 try { setupBoxMakingUI(); } catch (_) { /* no-op */ }
+// Dot Box Making UI hookup
+try { setupDotBoxMakingUI(); } catch (_) { /* no-op */ }

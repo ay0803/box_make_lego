@@ -5,6 +5,10 @@ export { THREE };
 // 円柱のセグメント数（円周分割数）。円柱としてのみ使うため固定化。
 export const DEFAULT_CYLINDER_SEGMENTS = 50;
 
+// Fixed dot specs (for dot Make box)
+export const DOT_DIAMETER_MM = 5.1; // stud diameter (fixed)
+export const DOT_SPACING_MM = 8.0;  // stud pitch/spacing (fixed)
+
 // Environment and renderer configuration
 const CAMERA_FOV = 60;
 const CAMERA_NEAR = 0.1;

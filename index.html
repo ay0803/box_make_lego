@@ -71,6 +71,7 @@
             <label><input type="radio" name="box-scale" value="3" />Side B</label>
           </div>
           <div class="row">
+            <span>long(mm):</span>
             <label for="box-size-x">X</label>
             <input id="box-size-x" type="number" min="1" step="1" value="40" style="width:48px;">
             <label for="box-size-y">Y</label>
@@ -83,6 +84,40 @@
           <textarea id="box-json-output" spellcheck="false" placeholder="Generated JSON will appear here" style="height:60px;"></textarea>
           <div class="row" style="margin-top:0;">
             <button id="box-send-above" style="min-width:80px;">Send JSON Above</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          JSON support | dot Make box
+          <button id="dot-box-toggle" style="background:#333;color:#ddd;border:1px solid #555;padding:4px 10px;border-radius:6px;">Open</button>
+        </div>
+        <div id="dot-box-content" style="display:none;">
+          <div class="row" style="color:#ccc;">
+            <span>Parts:</span>
+            <label><input type="radio" name="dot-box-scale" value="1" checked />Top</label>
+            <label><input type="radio" name="dot-box-scale" value="2" />Side A</label>
+            <label><input type="radio" name="dot-box-scale" value="3" />Side B</label>
+          </div>
+          <div class="row" style="color:#ccc;">
+            <span>Dot type:</span>
+            <label><input type="radio" name="dot-box-type" value="A" checked />凸</label>
+            <label><input type="radio" name="dot-box-type" value="B" />凹</label>
+          </div>
+          <div class="row">
+            <span>Dot (num):</span>
+            <label for="dot-box-size-x">X</label>
+            <input id="dot-box-size-x" type="number" min="1" step="1" value="4" style="width:24px;">
+            <label for="dot-box-size-y">Y</label>
+            <input id="dot-box-size-y" type="number" min="1" step="1" value="2" style="width:24px;">
+            <label for="dot-box-size-z">Z</label>
+            <input id="dot-box-size-z" type="number" min="1" step="1" value="3" style="width:24px;">
+          </div>
+          <button id="dot-box-create-btn" style="background:#3f51b5;min-width:90px;">Create JSON</button>
+          <span id="dot-box-json-error" class="error"></span>
+          <textarea id="dot-box-json-output" spellcheck="false" placeholder="Generated JSON will appear here" style="height:60px;"></textarea>
+          <div class="row" style="margin-top:0;">
+            <button id="dot-box-send-above" style="min-width:80px;">Send JSON Above</button>
           </div>
         </div>
       </div>
@@ -105,13 +140,13 @@
       import './src/main.js';
       // Remove setupPanelToggle for Environment panel (let main.js control it exclusively)
       function setupPanelToggle(btnId, contentId) {
-        // boxパネルのみトグルを有効に
-        if (btnId === 'box-toggle') {
+        // box と dot-box パネルのみトグルを有効に
+        if (btnId === 'box-toggle' || btnId === 'dot-box-toggle') {
           const btn = document.getElementById(btnId);
           const content = document.getElementById(contentId);
           if (btn && content) {
-            btn.textContent = 'Close';
-            content.style.display = 'block';
+            const isOpen = content.style.display !== 'none';
+            btn.textContent = isOpen ? 'Close' : 'Open';
             btn.addEventListener('click', () => {
               const open = content.style.display !== 'none';
               content.style.display = open ? 'none' : 'block';
@@ -121,6 +156,7 @@
         }
       }
       setupPanelToggle('box-toggle', 'box-content');
+      setupPanelToggle('dot-box-toggle', 'dot-box-content');
       // 環境パネル('env-toggle')のトグルはmain.jsに任せる
       // setupPanelToggle('env-toggle', 'env-content');
     </script>
