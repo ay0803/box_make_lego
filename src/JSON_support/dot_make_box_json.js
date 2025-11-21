@@ -34,7 +34,7 @@ function buildPartByK(x, y, z, k, l = 1) {
       };
     }
     if (k === 2) {
-      const b_sizes = [[dotx-2,1,doty-2],[1,1,doty-5],[1,1,doty-5],[dotx,1,doty-5]];
+      const b_sizes = [[dotx-2,1,doty-2+1],[1,1,doty-5+1],[1,1,doty-5+1],[dotx,1,doty-5+1]];
       const b_positions = [[0,0,0],[(dotx-1)/2,0,0],[-(dotx-1)/2,0,0],[0,1,0]];
       const b_qs = b_sizes.map(a => a.map(q));
       const b_qp = b_positions.map(a => a.map(q));
@@ -57,7 +57,7 @@ function buildPartByK(x, y, z, k, l = 1) {
       };
     }
     if (k === 3) {
-      const b_sizes = [[dotz-4,1,doty-2],[dotz-4,1,doty-5]];
+      const b_sizes = [[dotz-4,1,doty-2+1],[dotz-4,1,doty-5+1]];
       const b_positions = [[0,0,0],[0,1,0]];
       const b_qs = b_sizes.map(a => a.map(q));
       const b_qp = b_positions.map(a => a.map(q));
